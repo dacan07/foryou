@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>For You | Наша история</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Arial', sans-serif;
+            overflow-x: hidden;
+            background: #fff5f7;
+            position: relative;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        /* ========== ЛИЛИИ ========== */
+        .lily-top-left {
+            position: fixed;
+            top: 55px;
+            left: 20px;
+            width: 100px;
+            z-index: 99;
+            pointer-events: none;
+        }
+
+        .lily-bottom-right {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+            z-index: 99;
+            pointer-events: none;
+        }
+
+        @media (max-width: 750px) {
+            .lily-top-left, .lily-bottom-right {
+                width: 70px;
+            }
+            .lily-top-left {
+                top: 60px;
+                left: 15px;
+            }
+            .lily-bottom-right {
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+
+        .first-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .first-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .heart-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        .heart {
+            font-size: 80px;
+            animation: heartbeat 0.8s infinite ease-in-out;
+            transition: all 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+            display: inline-block;
+        }
+
+        .heart.grow {
+            transform: scale(4);
+            opacity: 0;
+            filter: drop-shadow(0 0 20px #ff99aa);
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.15); }
+            35% { transform: scale(1.2); }
+            45% { transform: scale(1.15); }
+            55% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .history-btn {
+            background: transparent;
+            border: 2px solid #ff99aa;
+            color: #ff99aa;
+            font-size: 18px;
+            font-weight: 500;
+            padding: 10px 32px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 12px rgba(255, 153, 170, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: inherit;
+            z-index: 10;
+        }
+
+        .history-btn:hover {
+            background: #ff99aa;
+            color: #1a1a1a;
+            box-shadow: 0 0 28px #ff99aa;
+            transform: scale(1.05);
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 200;
+            animation: floatParticle 1.2s ease-out forwards;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 153, 170, 0.3) 0%, rgba(255, 153, 170, 0) 70%);
+            pointer-events: none;
+            z-index: 150;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .flash.active {
+            opacity: 1;
+        }
+
+        .main-content {
+            background: #fff5f7;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .main-content.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== ВКЛАДКИ ===== */
+        .tabs-container {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 245, 247, 0.96);
+            backdrop-filter: blur(10px);
+            z-index: 50;
+            border-bottom: 1px solid #ffd9e0;
+            padding: 0 20px;
+        }
+
+        .tabs {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            font-size: 16px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            padding: 18px 0 14px;
+            cursor: pointer;
+            color: #888;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            color: #cc6677;
+            border-bottom: 2px solid #cc6677;
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 50px 24px;
+            animation: fadeIn 0.5s ease;
+            background: #fff5f7;
+        }
+
+        .tab-content.active-tab {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== ОБЩИЕ СТИЛИ ДЛЯ ВКЛАДОК ===== */
+        .moment-header, .about-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .moment-header h1, .about-header h1 {
+            font-size: 42px;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+            color: #cc6677;
+        }
+
+        .moment-content, .about-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 50px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 12px 12px 20px 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.25s ease;
+            width: 280px;
+            border-radius: 4px;
+        }
+
+        .polaroid:hover {
+            transform: translateY(-5px);
+        }
+
+        .polaroid img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            border-radius: 2px;
+        }
+
+        .polaroid-caption {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #cc8899;
+            letter-spacing: 0.5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .moment-text, .about-text {
+            flex: 1;
+            min-width: 260px;
+            max-width: 450px;
+        }
+
+        .moment-text p, .about-text p {
+            font-size: 18px;
+            line-height: 1.65;
+            color: #5a4a4f;
+            margin-bottom: 24px;
+            font-weight: 350;
+        }
+
+        /* ===== ПИСЬМО ===== */
+        .letter-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .envelope {
+            position: relative;
+            width: 320px;
+            height: 200px;
+            background: #f5b0c0;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 10;
+        }
+
+        .envelope:hover {
+            transform: translateY(-5px);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: #e898aa;
+            border-radius: 10px 10px 0 0;
+            clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: top;
+            z-index: 12;
+        }
+
+        .envelope-body {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: #f5b0c0;
+            border-radius: 0 0 10px 10px;
+            z-index: 11;
+        }
+
+        .letter-note {
+            background: #fffef5;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Courier New', cursive;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #4a4a4a;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10);
+            text-align: center;
+            max-width: 320px;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .letter-wrapper.open .letter-note {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .letter-wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .letter-note p {
+            margin-bottom: 12px;
+        }
+
+        .letter-note .signature {
+            margin-top: 15px;
+            font-style: italic;
+            color: #f5a0b5;
+        }
+
+        .letter-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .letter-header h1 {
+            font-size: 42px;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+            color: #cc6677;
+        }
+
+        /* ===== КНОПКА МУЗЫКИ ===== */
+        .music-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 999;
+            background: #cc6677;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 50%;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(204, 102, 119, 0.4);
+            transition: all 0.3s ease;
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .music-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(204, 102, 119, 0.6);
+        }
+
+        @media (max-width: 750px) {
+            .moment-content, .about-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .moment-text, .about-text {
+                text-align: center;
+            }
+            .moment-header h1, .about-header h1, .letter-header h1 {
+                font-size: 32px;
+            }
+            .history-btn {
+                font-size: 16px;
+                padding: 8px 28px;
+            }
+            .polaroid {
+                width: 260px;
+            }
+            .tabs {
+                gap: 16px;
+            }
+            .tab {
+                font-size: 13px;
+                padding: 14px 0 10px;
+            }
+            .envelope {
+                width: 280px;
+                height: 180px;
+            }
+            .letter-note {
+                max-width: 280px;
+                font-size: 13px;
+                padding: 20px;
+            }
+            .music-toggle {
+                bottom: 15px;
+                left: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== ЛИЛИИ ========== -->
+<img class="lily-top-left" src="lily-top-left.png" alt="Лилия">
+<img class="lily-bottom-right" src="lily-bottom-right.png" alt="Лилия">
+
+<!-- КНОПКА УПРАВЛЕНИЯ МУЗЫКОЙ -->
+<button class="music-toggle" id="musicToggle">🔇</button>
+
+<!-- ФОНОВАЯ МУЗЫКА -->
+<audio id="bgMusic" loop preload="auto">
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<div class="first-screen" id="firstScreen">
+    <div class="heart-wrapper">
+        <div class="heart" id="beatingHeart">❤️</div>
+    </div>
+    <button class="history-btn" id="openHistoryBtn">НАЧАТЬ ИСТОРИЮ</button>
+</div>
+
+<div class="flash" id="flash"></div>
+
+<div class="main-content" id="mainContent">
+    <!-- ВКЛАДКИ -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <div class="tab active" data-tab="moment">Вечер, который все изменил</div>
+            <div class="tab" data-tab="about">О тебе</div>
+            <div class="tab" data-tab="letter">Письмо</div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 1: Вечер, который все изменил -->
+    <div id="moment" class="tab-content active-tab">
+        <div class="moment-header">
+            <h1>Вечер, который все изменил</h1>
+        </div>
+        <div class="moment-content">
+            <div class="polaroid">
+                <img src="foto-moment.jpg" alt="Вечер, который все изменил">
+                <div class="polaroid-caption">💗</div>
+            </div>
+            <div class="moment-text">
+                <p>Именно в тот вечер мы начали нашу маленькую историю. С появлением тебя в моей жизни, моя "жизнь" обрела новые краски, и теперь каждый мой день наполнен смыслом, теплом и мыслями о тебе. </p>
+                <p>С того самого вечера я точно знаю, что ты именно тот человек, с которым я хочу проживать каждый момент своей жизни. И с каждым днём я убеждаюсь в этом всё сильнее.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 2: О тебе (фото справа, текст слева) -->
+    <div id="about" class="tab-content">
+        <div class="about-header">
+            <h1>О тебе</h1>
+        </div>
+        <div class="about-content">
+            <div class="polaroid">
+                <img src="foto-about.jpg" alt="О тебе">
+                <div class="polaroid-caption">💕</div>
+            </div>
+            <div class="about-text">
+                <p>Твои голубые глаза способны украсть внимание в любую секунду, а светлые волосы только подчёркивают эту красоту. В тебе есть что-то такое, из-за чего хочется смотреть дольше обычного и каждый раз находить что-то новое.</p>
+                <p>Ты можешь болтать бесконечно, но в твоём случае это почему-то не утомляет, а наоборот — хочется слушать дальше.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 3: Письмо -->
+    <div id="letter" class="tab-content">
+        <div class="letter-header">
+            <h1>💘</h1>
+        </div>
+        <div class="letter-wrapper" id="letterWrapper">
+            <div class="envelope" id="envelope">
+                <div class="envelope-flap"></div>
+                <div class="envelope-body"></div>
+            </div>
+            <div class="letter-note" id="letterNote">
+                <p class="signature"><strong>Моей любимой</strong></p>
+                <p>Очень рад тому вечеру и той бурмалде, которая свела нас вместе. За такой небольшой промежуток времени мы стали очень близки друг другу. Я ценю каждый момент, проведённый рядом с тобой, и надеюсь, что впереди нас ждёт ещё много счастливых воспоминаний. Хочу, чтобы мы были вместе всю жизнь, несмотря ни на какие трудности и испытания, которые могут встретиться на нашем пути.</p>
+                <p class="signature">❤️ Твой Тимур ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="height: 80px;"></div>
+</div>
+
+<script>
+    // Отключение правой кнопки мыши (запрет копирования)
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    const firstScreen = document.getElementById('firstScreen');
+    const mainContent = document.getElementById('mainContent');
+    const openHistoryBtn = document.getElementById('openHistoryBtn');
+    const beatingHeart = document.getElementById('beatingHeart');
+    const flash = document.getElementById('flash');
+    const music = document.getElementById('bgMusic');
+    const musicToggle = document.getElementById('musicToggle');
+    let isMusicPlaying = false;
+
+    // Проверяем, загрузился ли файл
+    music.addEventListener('canplaythrough', () => {
+        console.log('✅ Музыка загружена и готова к воспроизведению');
+    });
+
+    music.addEventListener('error', (e) => {
+        console.log('❌ Ошибка загрузки музыки:', e);
+        alert('Не удалось загрузить файл music.mp3. Проверьте, что файл лежит в той же папке и называется точно music.mp3');
+    });
+
+    function createBeautifulParticles(x, y) {
+        const colors = ['#ff99aa', '#ffb3c0', '#ffccd5', '#ffe0e6'];
+        const particleCount = 60;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 150 + Math.random() * 200;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance - 80;
+            particle.style.setProperty('--tx', tx + 'px');
+            particle.style.setProperty('--ty', ty + 'px');
+            const size = 6 + Math.random() * 12;
+            particle.style.left = (x + (Math.random() - 0.5) * 60) + 'px';
+            particle.style.top = (y + (Math.random() - 0.5) * 60) + 'px';
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.borderRadius = '50%';
+            particle.style.boxShadow = '0 0 10px rgba(255, 153, 170, 0.5)';
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 1200);
+        }
+    }
+
+    function createHeartParticles(x, y) {
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 100 + Math.random() * 150;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance - 60;
+            particle.style.setProperty('--tx', tx + 'px');
+            particle.style.setProperty('--ty', ty + 'px');
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            particle.style.fontSize = (12 + Math.random() * 16) + 'px';
+            particle.innerHTML = '❤️';
+            particle.style.background = 'transparent';
+            particle.style.boxShadow = 'none';
+            particle.style.textShadow = '0 0 8px #ff99aa';
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 1200);
+        }
+    }
+
+    // Кнопка "Начать историю"
+    openHistoryBtn.addEventListener('click', (e) => {
+        const heartRect = beatingHeart.getBoundingClientRect();
+        const btnRect = openHistoryBtn.getBoundingClientRect();
+        const heartX = heartRect.left + heartRect.width / 2;
+        const heartY = heartRect.top + heartRect.height / 2;
+        const btnX = btnRect.left + btnRect.width / 2;
+        const btnY = btnRect.top + btnRect.height / 2;
+        
+        // ЗАПУСК ФОНОВОЙ МУЗЫКИ
+        music.volume = 0.3;
+        
+        if (!isMusicPlaying) {
+            music.play().then(() => {
+                isMusicPlaying = true;
+                musicToggle.textContent = '🔊';
+                console.log('✅ Музыка играет!');
+            }).catch((error) => {
+                console.log('❌ Ошибка при запуске музыки:', error);
+                // Если автозапуск заблокирован браузером
+                document.addEventListener('click', function playOnClick() {
+                    music.play();
+                    isMusicPlaying = true;
+                    musicToggle.textContent = '🔊';
+                    console.log('✅ Музыка запущена после клика');
+                    document.removeEventListener('click', playOnClick);
+                });
+            });
+        }
+        
+        beatingHeart.classList.add('grow');
+        flash.classList.add('active');
+        setTimeout(() => flash.classList.remove('active'), 300);
+        createBeautifulParticles(heartX, heartY);
+        setTimeout(() => createBeautifulParticles(btnX, btnY), 100);
+        setTimeout(() => createHeartParticles(heartX, heartY), 150);
+        
+        setTimeout(() => {
+            firstScreen.classList.add('hide');
+            setTimeout(() => {
+                mainContent.classList.add('show');
+            }, 100);
+        }, 600);
+    });
+
+    // Кнопка управления музыкой
+    musicToggle.addEventListener('click', () => {
+        if (isMusicPlaying) {
+            music.pause();
+            musicToggle.textContent = '🔇';
+            isMusicPlaying = false;
+            console.log('🔇 Музыка остановлена');
+        } else {
+            music.play().then(() => {
+                isMusicPlaying = true;
+                musicToggle.textContent = '🔊';
+                console.log('🔊 Музыка запущена');
+            }).catch((error) => {
+                console.log('❌ Ошибка при запуске музыки:', error);
+            });
+        }
+    });
+
+    // Переключение вкладок
+    const tabs = document.querySelectorAll('.tab');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabId = tab.getAttribute('data-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            contents.forEach(content => content.classList.remove('active-tab'));
+            const activeContent = document.getElementById(tabId);
+            if (activeContent) activeContent.classList.add('active-tab');
+        });
+    });
+
+    // Конверт
+    const envelope = document.getElementById('envelope');
+    const letterWrapper = document.getElementById('letterWrapper');
+    
+    envelope.addEventListener('click', () => {
+        letterWrapper.classList.toggle('open');
+    });
+</script>
+
+</body>
+</html>
